@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18  # Gunakan versi Node.js terbaru
+          node-version: 18  # Gunakan versi terbaru
 
       - name: Install dependencies
         run: npm install
@@ -47,8 +47,14 @@ jobs:
       - name: List build files (debug)
         run: ls -l build
 
+      - name: Test SSH Connection
+        run: |
+          echo "🔄 Testing SSH Connection..."
+          ssh -o StrictHostKeyChecking=no -p 65002 u573188607@217.196.54.35 "echo '✅ SSH Connection Successful'"
+
       - name: Clean `public_html` before deployment
         run: |
+          echo "🧹 Cleaning public_html directory..."
           ssh -o StrictHostKeyChecking=no -p 65002 u573188607@217.196.54.35 "rm -rf /public_html/*"
 
       - name: Deploy to Server
@@ -57,6 +63,6 @@ jobs:
           ssh_private_key: ${{ secrets.SSH_KEY }}  # Gunakan SSH Key dari GitHub Secrets
           source: "build/"  # ✅ Hanya folder build yang dikirim
           remote_host: "217.196.54.35"  # ✅ IP server Anda
-          remote_user: "u573188607"  # ✅ Username dari server
+          remote_user: "u573188607"  # ✅ Username server
           remote_port: "65002"  # ✅ Port SSH
           target: "/public_html"  # ✅ Lokasi yang benar untuk deploy
