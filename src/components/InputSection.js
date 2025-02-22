@@ -14,4 +14,3 @@ const InputSection = ({ setSummary }) => {
 };
 
 export default InputSection;
-
