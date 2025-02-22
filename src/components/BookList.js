@@ -21,4 +21,3 @@ const BookList = ({ setSelectedBook }) => {
 };
 
 export default BookList;
-
