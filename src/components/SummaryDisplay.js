@@ -10,4 +10,3 @@ const SummaryDisplay = ({ summary }) => {
 };
 
 export default SummaryDisplay;
-
