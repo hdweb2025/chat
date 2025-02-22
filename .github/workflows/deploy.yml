@@ -47,12 +47,16 @@ jobs:
       - name: List build files (debug)
         run: ls -l build
 
+      - name: Clean `public_html` before deployment
+        run: |
+          ssh -o StrictHostKeyChecking=no -p 65002 u573188607@217.196.54.35 "rm -rf /public_html/*"
+
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@v4
         with:
-          ssh_private_key: ${{ secrets.SSH_KEY }}  # ✅ Pastikan nama secret benar!
-          source: "build/"
+          ssh_private_key: ${{ secrets.SSH_KEY }}  # Gunakan SSH Key dari GitHub Secrets
+          source: "build/"  # ✅ Hanya folder build yang dikirim
           remote_host: "217.196.54.35"  # ✅ IP server Anda
           remote_user: "u573188607"  # ✅ Username dari server
-          remote_port: "65002"  # ✅ Gunakan remote_port (bukan port)
-          target: "/public_html"  # ✅ Pastikan path ini benar sesuai server
+          remote_port: "65002"  # ✅ Port SSH
+          target: "/public_html"  # ✅ Lokasi yang benar untuk deploy
