@@ -27,11 +27,25 @@ jobs:
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git checkout --orphan dist  # Buat branch dist baru tanpa riwayat lama
-          git rm -rf .  # Hapus semua file lama di branch dist
-          mv build/* .  # Pindahkan semua isi dari build/ ke root branch dist
-          rm -rf build  # Hapus folder build yang kosong
-          rm -rf src .github package.json package-lock.json .gitignore README.md  # Pastikan hanya hasil build yang tersisa
+          
+          # Ambil data terbaru dari origin
+          git fetch origin
+
+          # Hapus branch dist jika sudah ada sebelumnya
+          git push origin --delete dist || true
+
+          # Buat branch dist yang baru tanpa riwayat lama
+          git checkout --orphan dist
+          git rm -rf .
+
+          # Pindahkan semua file dari build/ ke root branch dist
+          mv build/* .
+          rm -rf build
+
+          # Hapus file yang tidak perlu
+          rm -rf src .github package.json package-lock.json .gitignore README.md
+
+          # Commit dan push ke branch dist
           git add .
           git commit -m "Deploy build to dist branch"
           git push --force https://x-access-token:${{ secrets.GH_PAT }}@github.com/hdweb2025/chat.git dist
