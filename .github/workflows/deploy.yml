@@ -27,14 +27,11 @@ jobs:
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          
-          # Ambil data terbaru dari origin
-          git fetch origin
 
-          # Hapus branch dist jika sudah ada sebelumnya
+          # Hapus branch dist di remote jika masih ada
           git push origin --delete dist || true
 
-          # Buat branch dist yang baru tanpa riwayat lama
+          # Buat branch dist baru tanpa riwayat lama
           git checkout --orphan dist
           git rm -rf .
 
