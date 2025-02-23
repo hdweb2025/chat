@@ -1,16 +1,16 @@
-name: Deploy React App
+name: Build and Deploy React App to GitHub Branch
 
 on:
   push:
     branches:
-      - main  # Jalankan setiap ada push ke branch utama
+      - main  # Jalankan setiap kali ada perubahan di branch utama
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
       - name: Setup Node.js
@@ -18,51 +18,18 @@ jobs:
         with:
           node-version: 18  # Gunakan versi terbaru
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build project
-        run: npm run build
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build
-          path: build
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build
-          path: build
-
-      - name: List build files (debug)
-        run: ls -l build
-
-      - name: Test SSH Connection
+      - name: Install Dependencies & Build Project
         run: |
-          echo "🔄 Testing SSH Connection..."
-          ssh -o StrictHostKeyChecking=no -p 65002 u573188607@217.196.54.35 "echo '✅ SSH Connection Successful'"
+          npm install
+          npm run build
 
-      - name: Clean `public_html` before deployment
+      - name: Deploy Build to `dist` Branch
         run: |
-          echo "🧹 Cleaning public_html directory..."
-          ssh -o StrictHostKeyChecking=no -p 65002 u573188607@217.196.54.35 "rm -rf /public_html/*"
-
-      - name: Deploy to Server
-        uses: easingthemes/ssh-deploy@v4
-        with:
-          ssh_private_key: ${{ secrets.SSH_KEY }}  # Gunakan SSH Key dari GitHub Secrets
-          source: "build/"  # ✅ Hanya folder build yang dikirim
-          remote_host: "217.196.54.35"  # ✅ IP server Anda
-          remote_user: "u573188607"  # ✅ Username server
-          remote_port: "65002"  # ✅ Port SSH
-          target: "/public_html"  # ✅ Lokasi yang benar untuk deploy
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git checkout --orphan dist
+          git rm -rf .
+          mv build/* .
+          git add .
+          git commit -m "Deploy build to dist branch"
+          git push --force origin dist
