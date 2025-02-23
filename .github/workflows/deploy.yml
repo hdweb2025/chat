@@ -1,4 +1,4 @@
-name: Build and Deploy React to dist Branch
+name: Build and Deploy React to GitHub Pages
 
 on:
   push:
@@ -22,29 +22,10 @@ jobs:
         run: |
           npm install
           npm run build
+          touch build/.nojekyll
 
-      - name: Deploy Build to dist Branch
-        env:
-          GIT_AUTH: https://x-access-token:${{ secrets.GH_PAT }}@github.com/hdweb2025/chat.git
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-
-          # Hapus branch dist di remote jika masih ada
-          git push $GIT_AUTH --delete dist || true
-
-          # Buat branch dist baru tanpa riwayat lama
-          git checkout --orphan dist
-          git rm -rf .
-
-          # Pindahkan semua file dari build/ ke root branch dist
-          mv build/* .
-          rm -rf build
-
-          # Hapus file yang tidak perlu
-          rm -rf src .github package.json package-lock.json .gitignore README.md
-
-          # Commit dan push ke branch dist menggunakan token
-          git add .
-          git commit -m "Deploy build to dist branch"
-          git push --force $GIT_AUTH dist
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages  # Simpan hasil build ke branch gh-pages
+          folder: build      # Folder hasil build
