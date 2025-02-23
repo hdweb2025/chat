@@ -5,6 +5,9 @@ on:
     branches:
       - main  # Jalankan setiap kali ada perubahan di branch utama
 
+permissions:
+  contents: write  # Pastikan GitHub Actions memiliki izin menulis ke repository
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,10 +25,11 @@ jobs:
         run: |
           npm install
           npm run build
-          touch build/.nojekyll
+          touch build/.nojekyll  # Mencegah GitHub Pages mengabaikan file _*
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          branch: gh-pages  # Simpan hasil build ke branch gh-pages
-          folder: build      # Folder hasil build
+          branch: gh-pages   # Simpan hasil build ke branch gh-pages
+          folder: build      # Pastikan hanya folder build yang dikirim
+          clean: true        # Hapus semua file lama sebelum push baru
